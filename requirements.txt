@@ -1,3 +1,5 @@
-mnist==0.2.2
-numpy==1.16.3
-keras==2.2.4
+numpy==1.19.5
+keras==2.6.0
+flask==2.0.1
+opencv-python
+requests
