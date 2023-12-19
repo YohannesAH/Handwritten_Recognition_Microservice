@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Digit Drawing App</title>
+</head>
+
+<body style="background-color: white;">
+  <h1>Digit Drawing App</h1>
+
+  <canvas id="drawingCanvas" width="870" height="230" style="background-color: black; border: 1px solid white;"></canvas>
+
+  <br>
+
+  <button id="clearButton" style="color: white; background-color: red; border: 1px solid white;">Clear</button>
+  <button id="predictButton" style="color: white; background-color: green; border: 1px solid white;">Predict</button>
+
+  <div id="predictions" style="margin-top: 20px;">
+    <p id="recognizedDigits"></p>
+  </div>
+
+  <script>
+    // JavaScript code for drawing functionality
+    const canvas = document.getElementById('drawingCanvas');
+    const context = canvas.getContext('2d');
+    let isDrawing = false;
+
+    canvas.addEventListener('mousedown', () => {
+      isDrawing = true;
+      context.beginPath();
+    });
+
+    canvas.addEventListener('mousemove', (event) => {
+      if (!isDrawing) return;
+
+      context.lineWidth = 10.5;
+      context.lineCap = 'round';
+      context.strokeStyle = 'white'; // Change the line color to white
+
+      context.lineTo(event.clientX - canvas.getBoundingClientRect().left, event.clientY - canvas.getBoundingClientRect().top);
+      context.stroke();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      isDrawing = false;
+    });
+
+    document.getElementById('clearButton').addEventListener('click', () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      clearPredictions();
+    });
+
+    document.getElementById('predictButton').addEventListener('click', async () => {
+      // Convert the canvas to a base64-encoded image
+      const imageDataUrl = canvas.toDataURL('image/png');
+
+      // Make an asynchronous POST request to the Flask endpoint
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image_data: imageDataUrl }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Received data from Flask:', data);
+          displayPredictions(data);
+          console.log('Image uploaded and processed successfully');
+        } else {
+          console.error('Error uploading and processing image');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+
+    // Function to display predictions
+    function displayPredictions(responseData) {
+      const recognizedDigitsElement = document.getElementById('recognizedDigits');
+      console.log('Recognized digits element:', recognizedDigitsElement);
+
+      if (
+        responseData &&
+        responseData.recognized_digits &&
+        responseData.recognized_digits.recognized_digits &&
+        Array.isArray(responseData.recognized_digits.recognized_digits)
+      ) {
+        const recognizedDigits = responseData.recognized_digits.recognized_digits;
+        console.log('Received predictions:', recognizedDigits);
+
+        // Clear existing predictions
+        recognizedDigitsElement.textContent = '';
+
+        // Check if there are recognized digits
+        if (recognizedDigits.length > 0) {
+          // Keep the original order of recognized digits
+          const sortedDigits = recognizedDigits;
+
+          // Add text before displaying the digits
+          recognizedDigitsElement.textContent = 'The recognized digits are: ';
+
+          // Create individual digit elements
+          for (const digitInfo of sortedDigits) {
+            const digitElement = document.createElement('span');
+            digitElement.textContent = digitInfo.digit_class;
+            recognizedDigitsElement.appendChild(digitElement);
+          }
+        } else {
+          // Display message when no recognized digits
+          recognizedDigitsElement.textContent = 'No recognized digits.';
+        }
+      } else {
+        recognizedDigitsElement.textContent = 'No recognized digits available.';
+      }
+    }
+
+    // Function to clear predictions
+    function clearPredictions() {
+      const recognizedDigitsElement = document.getElementById('recognizedDigits');
+      recognizedDigitsElement.textContent = '';
+    }
+
+  </script>
+</body>
+
+</html>

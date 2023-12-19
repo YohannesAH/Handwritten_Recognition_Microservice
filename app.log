@@ -1,0 +1,49 @@
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 700-234-625
+INFO:werkzeug:127.0.0.1 - - [12/Dec/2023 04:08:54] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [12/Dec/2023 04:08:54] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 41 1
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 54 5979
+INFO:root:Recognized Digits: {'recognized_digits': [{'position': 62, 'digit_class': 3}]}
+INFO:werkzeug:127.0.0.1 - - [12/Dec/2023 04:08:59] "POST /predict HTTP/1.1" 200 -
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 41 1
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 54 8192
+INFO:root:Recognized Digits: {'recognized_digits': [{'position': 84, 'digit_class': 2}, {'position': 209, 'digit_class': 3}, {'position': 382, 'digit_class': 8}]}
+INFO:werkzeug:127.0.0.1 - - [12/Dec/2023 04:09:06] "POST /predict HTTP/1.1" 200 -
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 41 1
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 54 8192
+INFO:root:Recognized Digits: {'recognized_digits': [{'position': 106, 'digit_class': 2}, {'position': 255, 'digit_class': 3}, {'position': 404, 'digit_class': 4}, {'position': 538, 'digit_class': 5}]}
+INFO:werkzeug:127.0.0.1 - - [12/Dec/2023 04:09:19] "POST /predict HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 353-962-383
+INFO:werkzeug:127.0.0.1 - - [15/Dec/2023 01:37:46] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [15/Dec/2023 01:37:47] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 41 1
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 54 8192
+INFO:root:Recognized Digits: {'recognized_digits': [{'position': 85, 'digit_class': 2}, {'position': 218, 'digit_class': 3}, {'position': 364, 'digit_class': 5}]}
+INFO:werkzeug:127.0.0.1 - - [15/Dec/2023 01:37:56] "POST /predict HTTP/1.1" 200 -
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 353-962-383
+INFO:werkzeug:127.0.0.1 - - [19/Dec/2023 03:02:33] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [19/Dec/2023 03:02:34] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 41 1
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 54 7007
+INFO:root:Recognized Digits: {'recognized_digits': [{'position': 77, 'digit_class': 2}, {'position': 197, 'digit_class': 4}]}
+INFO:werkzeug:127.0.0.1 - - [19/Dec/2023 03:02:41] "POST /predict HTTP/1.1" 200 -

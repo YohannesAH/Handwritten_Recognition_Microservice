@@ -1,28 +1,56 @@
 # Importing important libraries
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import numpy as np
 from keras.models import load_model
 import cv2 as cv
+import os
 import base64
 from io import BytesIO
 from PIL import Image, ImageEnhance
 import re
+import logging
+import time
 
 # Initializing Flask
 app = Flask(__name__)
+
+# Configure logging to a fixed log file
+log_filename = 'app.log'
+logging.basicConfig(filename=log_filename, level=logging.DEBUG)
 
 # Load the pre-trained model
 model = load_model('mymodel')
 
 # Extraction starts here
+def correct_orientation(image):
+    # Convert the image to grayscale
+    gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+
+    # Apply Hough Line Transform to detect lines
+    lines = cv.HoughLines(gray_image, 1, np.pi / 180, threshold=100)
+
+    if lines is None:
+        raise Exception("Hi It doesn't detect digits, draw digits")
+
+    # Calculate the average angle of detected lines
+    angle = np.mean([line[0][1] for line in lines])
+
+    # Rotate the image to correct the orientation
+    rotated_image = cv.warpAffine(image, cv.getRotationMatrix2D((image.shape[1] // 2, image.shape[0] // 2), angle, 1), (image.shape[1], image.shape[0]))
+
+    return rotated_image
+
 def split_and_extract_digits(image_path):
     try:
         # Read the image from the provided path
         image = Image.open(image_path)
         image = np.array(image)
 
-        # Convert the image to grayscale
-        gray_image = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        # Correct the orientation of the image
+        corrected_img = correct_orientation(image)
+
+        # Convert the corrected image to grayscale
+        gray_image = cv.cvtColor(corrected_img, cv.COLOR_BGR2GRAY)
 
         # Apply Gaussian blur for noise reduction (adjust the kernel size as needed)
         blurred_image = cv.GaussianBlur(gray_image, (3, 3), 0)
@@ -81,14 +109,19 @@ def split_and_extract_digits(image_path):
                     'digit': np.array(enhanced_digit),
                 })
 
+                # Save the augmented digit image with a unique filename
+                timestamp = int(time.time())  # Get a unique timestamp
+                output_path = f'digit_{timestamp}_{i + 1}.png'
+                enhanced_digit.save(output_path)
+
         # Sort digit_info based on x-coordinate before returning
         digit_info.sort(key=lambda x: x['position'])
 
         return digit_info
 
     except Exception as e:
+        logging.error(f"An error occurred in split_and_extract_digits: {e}")
         return []
-
 # Extraction ends here
 
 # Prediction happens here
@@ -100,14 +133,16 @@ def predict():
             data = request.get_json()
             base64_image = data['image_data']
         except KeyError:
+            logging.error('Invalid JSON data: Missing image_data')
             return jsonify({'error': 'Invalid JSON data'})
 
         if base64_image:
+            # Decode the base64 string to obtain the image
             try:
                 # Extract the base64 data from the string
                 image_data = re.sub('^data:image/.+;base64,', '', base64_image)
                 image_data = base64.b64decode(image_data)
-                image_path = 'temp_image.png'  # Specify a temporary image path
+                image_path = 'temp_image.png'
 
                 with open(image_path, 'wb') as f:
                     f.write(image_data)
@@ -132,15 +167,24 @@ def predict():
 
                 # Returning prediction
                 recognized_digits = {'recognized_digits': predictions}
+                logging.info(f"Recognized Digits: {recognized_digits}")
                 return jsonify({'message': 'Recognized digits:', 'recognized_digits': recognized_digits})
 
             except Exception as e:
+                logging.error(f"Error decoding base64 image: {e}")
                 return jsonify({'error': f'Error decoding base64 image: {e}'})
 
+        logging.error('No base64 image provided')
         return jsonify({'error': 'No base64 image provided'})
 
     except Exception as e:
+        logging.error(f"An error occurred: {e}")
         return jsonify({'error': f'An error occurred: {e}'})
+
+# Serve extracted digits
+@app.route('/extracted_digits/<filename>')
+def extracted_file(filename):
+    return send_from_directory('', filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
